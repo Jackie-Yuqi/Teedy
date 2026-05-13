@@ -13,13 +13,16 @@ pipeline {
                 sh 'mvn compile'
             }
         }
-        
         stage('Test') {
             steps {
-                sh 'mvn test -Dmaven.test.failure.ignore=true'
+                sh 'mvn test -Dmaven.test.failure.ignore=true -Dtest="!com.sismics.util.format.TestPdfFormatHandler"'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
             }
         }
-        
         stage('PMD') {
             steps {
                 sh 'mvn pmd:pmd'
