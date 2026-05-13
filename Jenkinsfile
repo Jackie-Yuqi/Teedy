@@ -39,8 +39,12 @@ pipeline {
         }
         stage('Archive Artifacts') {
             steps {
+                // 归档 war 包
                 archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
-                archiveArtifacts artifacts: '**/target/site/**', allowEmptyArchive: true
+                // 归档各模块的 site 目录
+                archiveArtifacts artifacts: 'docs-core/target/site/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'docs-web/target/site/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'docs-web-common/target/site/**', allowEmptyArchive: true
             }
         }
     }
