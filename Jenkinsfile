@@ -52,19 +52,21 @@ pipeline {
 
     post {
         always {
-            // 归档所有 war 包
+=
             archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
-            // 归档所有 jar 包
+
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-            // 归档 docs-core 的 site 报告
+
             archiveArtifacts artifacts: 'docs-core/target/site/**', allowEmptyArchive: true
-            // 归档 docs-web 的 site 报告
+
             archiveArtifacts artifacts: 'docs-web/target/site/**', allowEmptyArchive: true
-            // 归档 docs-web-common 的 site 报告
+
             archiveArtifacts artifacts: 'docs-web-common/target/site/**', allowEmptyArchive: true
-            // 归档根目录的 site（如果有）
-            archiveArtifacts artifacts: 'target/site/**', allowEmptyArchive: true
-            // 清理工作空间
+
+            archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
+            archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
+            archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
+            junit '**/target/surefire-reports/*.xml'
             cleanWs()
         }
     }
