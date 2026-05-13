@@ -3,30 +3,35 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
-    <description>Custom PMD ruleset for Practice 7</description>
+    <description>
+        Custom PMD ruleset for Practice 7
+        Four metrics: LoC, CC, WMC, CBO
+    </description>
 
-    <rule ref="category/java/design.xml/ExcessiveMethodLength">
+    <!-- 1. Lines of Code (LoC) - ExcessiveMethodLength 在 PMD 7.x 中已被移除 -->
+    <!-- 使用 NcssCount 代替 -->
+    <rule ref="category/java/design.xml/NcssCount">
         <properties>
-            <property name="minimum" value="50"/>
+            <property name="methodReportLevel" value="50"/>
+            <property name="classReportLevel" value="500"/>
         </properties>
     </rule>
 
+    <!-- 2. Cyclomatic Complexity (CC) - PMD 7.x 使用 methodReportLevel -->
     <rule ref="category/java/design.xml/CyclomaticComplexity">
         <properties>
-            <property name="threshold" value="10"/>
+            <property name="methodReportLevel" value="10"/>
         </properties>
     </rule>
 
-    <rule ref="category/java/design.xml/TooManyMethods">
+    <!-- 3. Weighted Methods per Class (WMC) - 使用 ClassFanOutComplexity -->
+    <rule ref="category/java/design.xml/ClassFanOutComplexity">
         <properties>
-            <property name="maxmethods" value="20"/>
+            <property name="max" value="20"/>
         </properties>
     </rule>
 
-    <rule ref="category/java/design.xml/ExcessiveImports">
-        <properties>
-            <property name="minimum" value="30"/>
-        </properties>
-    </rule>
+    <!-- 4. Coupling Between Objects (CBO) - 使用 LawOfDemeter -->
+    <rule ref="category/java/design.xml/LawOfDemeter"/>
 
 </ruleset>
