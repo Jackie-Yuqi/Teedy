@@ -56,7 +56,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'target/staging/**', fingerprint: true
+            archiveArtifacts artifacts: '**/target/staging/**', fingerprint: true
 
             archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
             archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
