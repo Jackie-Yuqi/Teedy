@@ -8,8 +8,7 @@
         Four metrics: LoC, CC, WMC, CBO
     </description>
 
-    <!-- 1. Lines of Code (LoC) - ExcessiveMethodLength 在 PMD 7.x 中已被移除 -->
-    <!-- 使用 NcssCount 代替 -->
+    <!-- 1. Lines of Code (LoC) - PMD 7.x 使用 NcssCount -->
     <rule ref="category/java/design.xml/NcssCount">
         <properties>
             <property name="methodReportLevel" value="50"/>
@@ -17,21 +16,37 @@
         </properties>
     </rule>
 
-    <!-- 2. Cyclomatic Complexity (CC) - PMD 7.x 使用 methodReportLevel -->
+    <!-- 2. Cyclomatic Complexity (CC) - PMD 7.x -->
     <rule ref="category/java/design.xml/CyclomaticComplexity">
         <properties>
             <property name="methodReportLevel" value="10"/>
+            <property name="classReportLevel" value="100"/>
         </properties>
     </rule>
 
-    <!-- 3. Weighted Methods per Class (WMC) - 使用 ClassFanOutComplexity -->
-    <rule ref="category/java/design.xml/ClassFanOutComplexity">
+    <!-- 3. Weighted Methods per Class (WMC) - PMD 7.x 没有直接对应规则 -->
+    <!-- 使用 ExcessivePublicCount 作为替代 -->
+    <rule ref="category/java/design.xml/ExcessivePublicCount">
         <properties>
-            <property name="max" value="20"/>
+            <property name="minimum" value="20"/>
         </properties>
     </rule>
 
-    <!-- 4. Coupling Between Objects (CBO) - 使用 LawOfDemeter -->
+    <!-- 4. Coupling Between Objects (CBO) - PMD 7.x 使用 LawOfDemeter -->
     <rule ref="category/java/design.xml/LawOfDemeter"/>
+
+    <!-- 额外：检测过长的类 -->
+    <rule ref="category/java/design.xml/ExcessiveClassLength">
+        <properties>
+            <property name="minimum" value="500"/>
+        </properties>
+    </rule>
+
+    <!-- 额外：检测过多的方法 -->
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="20"/>
+        </properties>
+    </rule>
 
 </ruleset>
