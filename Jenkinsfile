@@ -18,11 +18,6 @@ pipeline {
             steps {
                 sh 'mvn test -Dmaven.test.failure.ignore=true'
             }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
         }
         
         stage('PMD') {
