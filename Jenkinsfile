@@ -53,21 +53,21 @@ pipeline {
     post {
         always {
 =
-            archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
+            // archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
 
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            // archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
 
-            archiveArtifacts artifacts: 'docs-core/target/site/**', allowEmptyArchive: true
+            // archiveArtifacts artifacts: 'docs-core/target/site/**', allowEmptyArchive: true
 
-            archiveArtifacts artifacts: 'docs-web/target/site/**', allowEmptyArchive: true
+            // archiveArtifacts artifacts: 'docs-web/target/site/**', allowEmptyArchive: true
 
-            archiveArtifacts artifacts: 'docs-web-common/target/site/**', allowEmptyArchive: true
+            // archiveArtifacts artifacts: 'docs-web-common/target/site/**', allowEmptyArchive: true
 
             archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
             archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
             archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
             junit '**/target/surefire-reports/*.xml'
-            cleanWs()
+            // cleanWs()
         }
     }
 }
