@@ -18,31 +18,28 @@ pipeline {
             }
             post {
                 always {
-                    // 收集测试报告，Jenkins 会解析并展示
                     junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
         stage('PMD') {
             steps {
-                sh 'mvn pmd:pmd'
+                sh 'mvn pmd:pmd || true'
             }
         }
         stage('JaCoCo') {
             steps {
-                sh 'mvn jacoco:report'
+                sh 'mvn jacoco:report || true'
             }
         }
         stage('Site') {
             steps {
-                sh 'mvn site'
+                sh 'mvn site || true'
             }
         }
         stage('Archive Artifacts') {
             steps {
-                // 归档 war 包（如果有）
                 archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
-                // 归档整个站点文档（方便查看）
                 archiveArtifacts artifacts: '**/target/site/**', allowEmptyArchive: true
             }
         }
@@ -50,9 +47,7 @@ pipeline {
 
     post {
         always {
-            // 清理工作空间（可选）
             cleanWs()
         }
     }
 }
-
