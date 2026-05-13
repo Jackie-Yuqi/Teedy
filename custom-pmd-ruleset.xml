@@ -1,0 +1,45 @@
+
+<?xml version="1.0"?>
+<ruleset name="Custom Ruleset"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        Custom PMD ruleset for Practice 7
+        四个指标: LoC, CC, WMC, CBO
+        (LCOM 在 PMD 6.x 中不支持)
+    </description>
+
+    <!-- 1. Lines of Code (LoC) - 类的非注释代码行数 -->
+    <rule ref="category/java/design.xml/NcssTypeCount">
+        <properties>
+            <property name="minimum" value="500"/>
+        </properties>
+    </rule>
+
+    <!-- 2. Cyclomatic Complexity (CC) - 圈复杂度 -->
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="reportLevel" value="10"/>
+        </properties>
+    </rule>
+
+    <!-- 3. Weighted Methods per Class (WMC) - 类的方法数量 -->
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="20"/>
+        </properties>
+    </rule>
+
+    <!-- 4. Coupling Between Objects (CBO) - 耦合度 -->
+    <rule ref="category/java/design.xml/ExcessiveImports">
+        <properties>
+            <property name="minimum" value="30"/>
+        </properties>
+    </rule>
+
+    <!-- LCOM 在 PMD 6.x 中不可用，已省略 -->
+    <!-- PMD 7.0+ 可使用: <rule ref="category/java/design.xml/LackOfCohesionOfMethods"/> -->
+
+</ruleset>
