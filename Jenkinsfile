@@ -49,14 +49,14 @@ pipeline {
 
         stage('Stage Site') {
             steps {
-                sh 'mvn site:stage'
+                sh 'mvn site:stage -DstagingDirectory=/tmp/teedy-site'
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '**/target/staging/**', fingerprint: true
+            archiveArtifacts artifacts: '/tmp/teedy-site/**', fingerprint: true
 
             archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
             archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
