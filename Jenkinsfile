@@ -1,18 +1,25 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub_credentials')
+        DOCKER_IMAGE = 'lllyyyqqqq/teedy'  
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
+    }
+
     stages {
         stage('Clean') {
             steps {
                 sh 'mvn clean'
             }
         }
-        
+
         stage('Compile') {
             steps {
                 sh 'mvn compile'
             }
         }
+
         stage('Test') {
             steps {
                 sh 'mvn test -Dmaven.test.failure.ignore=true -Dtest="!com.sismics.util.format.TestPdfFormatHandler"'
@@ -23,78 +30,58 @@ pipeline {
                 }
             }
         }
-        stage('PMD') {
-            steps {
-                sh 'mvn pmd:pmd'
-            }
-        }
-        
-        stage('JaCoCo') {
-            steps {
-                sh 'mvn jacoco:report'
-            }
-        }
-        
+
         stage('Package') {
             steps {
                 sh 'mvn package -DskipTests'
             }
         }
-        
-        stage('Site') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn site'
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
             }
         }
 
-        stage('Assemble Site') {
+        stage('Push to Docker Hub') {
             steps {
-                sh '''#!/bin/bash
-                    ASSEMBLY_DIR="${WORKSPACE}/assembled-site"
-                    rm -rf "$ASSEMBLY_DIR"
-                    mkdir -p "$ASSEMBLY_DIR"
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push('latest')
+                    }
+                }
+            }
+        }
 
-                    # 定义模块列表（父模块用 "." 表示）
-                    MODULES=("." "docs-core" "docs-web-common" "docs-web")
+        stage('Run Three Containers') {
+            steps {
+                script {
+                    // 清理旧容器
+                    sh 'docker stop teedy-8082 || true'
+                    sh 'docker rm teedy-8082 || true'
+                    sh 'docker stop teedy-8083 || true'
+                    sh 'docker rm teedy-8083 || true'
+                    sh 'docker stop teedy-8084 || true'
+                    sh 'docker rm teedy-8084 || true'
 
-                    # 复制各模块的 target/site 到统一目录
-                    for mod in "${MODULES[@]}"; do
-                        SRC="${WORKSPACE}/${mod}/target/site"
-                        if [ -d "$SRC" ]; then
-                            if [ "$mod" = "." ]; then
-                                # 父模块直接放在根层级
-                                cp -r "$SRC"/* "$ASSEMBLY_DIR/"
-                            else
-                                # 子模块放在同名子目录下
-                                mkdir -p "$ASSEMBLY_DIR/${mod}"
-                                cp -r "$SRC"/* "$ASSEMBLY_DIR/${mod}/"
-                            fi
-                        else
-                            echo "Warning: $SRC not found, skipping ${mod}"
-                        fi
-                    done
-
-                    find "$ASSEMBLY_DIR" -name "*.html" -exec sed -i 's|href="../docs-core/|href="docs-core/|g' {} \\;
-                    find "$ASSEMBLY_DIR" -name "*.html" -exec sed -i 's|href="../docs-web-common/|href="docs-web-common/|g' {} \\;
-                    find "$ASSEMBLY_DIR" -name "*.html" -exec sed -i 's|href="../docs-web/|href="docs-web/|g' {} \\;
-
-                    echo "Site assembled to $ASSEMBLY_DIR"
-                '''
+                    // 运行三个容器
+                    sh "docker run -d -p 8082:8080 --name teedy-8082 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh "docker run -d -p 8083:8080 --name teedy-8083 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    sh "docker run -d -p 8084:8080 --name teedy-8084 ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
     }
 
     post {
         always {
-
-            archiveArtifacts artifacts: 'assembled-site/**', fingerprint: true
-
-            archiveArtifacts artifacts: '**/target/site/**/*.*', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
-
-            junit '**/target/surefire-reports/*.xml'
-            // cleanWs()
+            archiveArtifacts artifacts: '**/target/*.war', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/target/site/**', allowEmptyArchive: true
+            cleanWs()
         }
     }
 }
